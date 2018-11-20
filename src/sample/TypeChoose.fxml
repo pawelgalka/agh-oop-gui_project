@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="140.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <Button fx:id="valinteger" layoutX="35.0" layoutY="82.0" mnemonicParsing="false" onAction="#closeWindow1" text="Integer" />
+      <Label fx:id="info" alignment="CENTER" layoutX="182.0" layoutY="33.0" prefHeight="16.0" prefWidth="224.0" text="xxx" />
+      <Button fx:id="valdouble" layoutX="133.0" layoutY="82.0" mnemonicParsing="false" onAction="#closeWindow1" text="Double" />
+      <Button fx:id="valfloat" layoutX="221.0" layoutY="82.0" mnemonicParsing="false" onAction="#closeWindow1" text="Float" />
+      <Button fx:id="valboolean" layoutX="300.0" layoutY="82.0" mnemonicParsing="false" onAction="#closeWindow1" text="Boolean" />
+      <Button fx:id="valstring" layoutX="402.0" layoutY="82.0" mnemonicParsing="false" onAction="#closeWindow1" text="String" />
+      <Button fx:id="valdate" layoutX="492.0" layoutY="82.0" mnemonicParsing="false" onAction="#closeWindow1" text="DateTime" />
+   </children>
+</AnchorPane>
