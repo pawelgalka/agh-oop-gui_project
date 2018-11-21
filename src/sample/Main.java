@@ -14,6 +14,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -54,6 +56,13 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
         Parent root = loader.load();
         Controller controller = loader.getController();
+//        Image image = new Image(new File("x.png").toURI().toString());
+//        controller.img.setImage(image);
+//        controller.img.setFitWidth(100);
+//        controller.img.setPreserveRatio(true);
+//        controller.img.setSmooth(true);
+//        controller.img.setCache(true);
+//        controller.img = new ImageView(getClass().getResource("/home/pawelgalka/IdeaProjects/dataframe gui/Octicons-database.png").toExternalForm());
         System.out.println(controller);
         controller.setStage(this.stage);
         primaryStage.setTitle("DataFrame Graphic Environment");
@@ -347,7 +356,7 @@ public class Main extends Application {
        /* layout.add(col1, 1, 3);
         layout.add(col2, 3, 3);
         layout.add(col3, 5, 3);*/
-        Scene scene = new Scene(root,600,400);
+        Scene scene = new Scene(root);
 
         //setting color to the scene
         /*button.setOnAction(new EventHandler<ActionEvent>() {

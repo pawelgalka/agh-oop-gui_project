@@ -4,21 +4,26 @@ import dataframe.*;
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 
 
 public class Controller {
+
     static DataFrame dataFrame;
     static File file;
     static int index=0;
@@ -34,7 +39,7 @@ public class Controller {
     }
 
 
-Pane pane=new Pane();
+    Pane pane=new Pane();
 
     @FXML
     AnchorPane mainPane;
@@ -44,14 +49,18 @@ Pane pane=new Pane();
 
     @FXML
     Label fileInfo,info,info1;
+
     @FXML
     Button nextButton,valinteger,valdouble,valfloat,valboolean,valstring,valdate;
+
     @FXML
     Button max,min,sum,std,var;
 
-    public Controller() {
-//        System.out.println("first");
-    }
+    @FXML
+    Menu stat;
+
+
+    String[] options = {"Max","Min","Sum","Var","Std"};
     private static void configureFileChooser(
             final FileChooser fileChooser) {
         fileChooser.setTitle("Select CSV file");
@@ -63,9 +72,6 @@ Pane pane=new Pane();
         );
 
     }
-    public void pressButton(ActionEvent event){
-        System.out.println("Hello");
-    }
 
     public File chooseFile(){
         FileChooser fileChooser = new FileChooser();
@@ -73,7 +79,7 @@ Pane pane=new Pane();
         file = fileChooser.showOpenDialog(myStage);
         return file;
     }
-    String[] tmp;
+
     public void readFile(ActionEvent event){
         t=false;
         this.file = chooseFile();
@@ -103,7 +109,7 @@ Pane pane=new Pane();
 
 
         System.out.println(2);
-        if(t){
+        if(t && types[numberOfColumns-1]!=null){
             fileInfo.setText("Loaded file: "+file.getName());
 
             fileInfo.setDisable(false);
@@ -114,19 +120,186 @@ Pane pane=new Pane();
             std.setDisable(false);
             sum.setDisable(false);
             var.setDisable(false);
-            for(String s:names){
-                System.out.println(s);
+            for (String str:names){
+                MenuItem add = new MenuItem(str);
+                add.setOnAction(new EventHandler<ActionEvent>() {
+                                    public void handle(ActionEvent t) {
+                                        stats(str);
+                                    }});
+                stat.getItems().add(add);
+
             }
-            for (Class c:types){
-                System.out.println(c);
-            }
+            one_width=spane.getWidth();
             dataFrame = new DataFrame(file.getPath(),types,names);
-//        dataFrame.print();
             hashMap.put("dataframe",dataFrame);
         }
 
     }
+    Value getMax(ArrayList<Value> listOfIntegers) throws Exception {
+//        if (listOfIntegers.get(0).getClass() == ValBoolean.class || listOfIntegers.get(0).getClass() == ValString.class || listOfIntegers.get(0).getClass() == ValDateTime.class)
+//            return null;
+//        Value mean = getMean(listOfIntegers);
+//        Value square = listOfIntegers.get(0).sub(mean).pow(new ValInteger(2));
+        return Collections.max(listOfIntegers);
+    }
 
+    Value getMin(ArrayList<Value> listOfIntegers) throws Exception {
+//        if (listOfIntegers.get(0).getClass() == ValBoolean.class || listOfIntegers.get(0).getClass() == ValString.class || listOfIntegers.get(0).getClass() == ValDateTime.class)
+//            return null;
+//        Value mean = getMean(listOfIntegers);
+//        Value square = listOfIntegers.get(0).sub(mean).pow(new ValInteger(2));
+        return Collections.min(listOfIntegers);
+    }
+
+    Value getSum(ArrayList<Value> listOfIntegers) throws Exception {
+        if (listOfIntegers.get(0).getClass() == ValBoolean.class || listOfIntegers.get(0).getClass() == ValString.class || listOfIntegers.get(0).getClass() == ValDateTime.class)
+            return null;
+//        Value mean = getMean(listOfIntegers);
+//        Value square = listOfIntegers.get(0).sub(mean).pow(new ValInteger(2));
+        return getMean(listOfIntegers).mul(new ValInteger(listOfIntegers.size()));
+    }
+    Value getMean(ArrayList<Value> listOfIntegers) throws Exception
+    {
+        Value sum = listOfIntegers.get(0);
+        for(int i=1; i<listOfIntegers.size(); ++i)
+            sum = sum.add(listOfIntegers.get(i));
+        return sum.div(new ValInteger(listOfIntegers.size()));
+    }
+
+    Value getVariance(ArrayList<Value> listOfIntegers) throws Exception
+    {
+        if (listOfIntegers.get(0).getClass()==ValBoolean.class || listOfIntegers.get(0).getClass()==ValString.class || listOfIntegers.get(0).getClass()==ValDateTime.class) return null;
+        Value mean = getMean(listOfIntegers);
+        Value square = listOfIntegers.get(0).sub(mean).pow(new ValInteger(2));
+        for(int i=1; i<listOfIntegers.size(); ++i)
+            square = square.add(listOfIntegers.get(i).sub(mean).pow(new ValInteger(2)));
+        return square.div(new ValInteger(listOfIntegers.size()));
+    }
+    Value getStd(ArrayList<Value> list) throws Exception{
+        if (list.get(0).getClass()==ValBoolean.class || list.get(0).getClass()==ValString.class || list.get(0).getClass()==ValDateTime.class) return null;
+
+        return getVariance(list).pow(new ValDouble(0.5));
+    }
+    public void stats(String colname){
+        pane = new Pane();
+        System.out.println(one_width);
+        pane.setBackground(new Background(new BackgroundFill(Color.web("#" + "635B5B" ), CornerRadii.EMPTY, Insets.EMPTY)));
+        groupby = groupBy.getText().split(",");
+        System.out.println(groupBy.getText().length());
+        one_width = spane.getWidth()/options.length;
+        if (groupBy.getText().length()==0){
+            try {
+                if (!hashMap.containsKey("groupby")) {
+                    hashMap.put("groupby", dataFrame.groupby());
+                }
+                for (int i = 0; i < 5; ++i) {
+                    TextField value = new TextField(options[i]);
+                    value.setPrefWidth(one_width);
+                    value.setPrefHeight(27);
+                    value.setMaxWidth(one_width);
+                    value.setLayoutX(one_width*i);
+                    pane.getChildren().add(value);
+                    switch (i){
+                        case 0:
+                            value = new TextField(getMax(dataFrame.get(colname).getArrayList()).toString());
+                            break;
+                        case 1:
+                            value = new TextField(getMin(dataFrame.get(colname).getArrayList()).toString());
+                            break;
+                        case 2:
+                            if (getSum(dataFrame.get(colname).getArrayList())!=null)
+                                value = new TextField(getSum(dataFrame.get(colname).getArrayList()).toString());
+                            else
+                                value = new TextField("Unavailable");
+                            break;
+                        case 3:
+                            if (getVariance(dataFrame.get(colname).getArrayList())!=null)
+                                value = new TextField(getVariance(dataFrame.get(colname).getArrayList()).toString());
+                            else
+                                value = new TextField("Unavailable");
+                            break;
+                        case 4:
+                            if (getStd(dataFrame.get(colname).getArrayList())!=null)
+                                value = new TextField(getStd(dataFrame.get(colname).getArrayList()).toString());
+                            else
+                                value = new TextField("Unavailable");
+                            break;
+                            default:value = new TextField(" ");
+                    }
+//                    value = new TextField( ((DataFrame) hashMap.get("max")).getRecord(0)[i].toString());
+                    value.setPrefWidth(one_width);
+                    value.setMaxWidth(one_width);
+                    value.setPrefHeight(27);
+                    value.setLayoutX(one_width*i);
+                    value.setLayoutY(27);
+                    pane.getChildren().add(value);
+
+                }
+            } catch (Exception e) {e.printStackTrace();
+                errorDisplayGroupby(e, "An error occured while grouping dataframe");
+            }
+        }else{
+            try {
+                if (!hashMap.containsKey("groupby"+concatArray(groupby))) {
+                    hashMap.put("groupby"+concatArray(groupby), dataFrame.groupby(groupby));
+                }
+                DataFrame.GroupByDataFrame groupByDataFrame= (DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby));
+                for (int i = 0; i < 5; ++i) {
+                    TextField value = new TextField(options[i]);
+                    value.setPrefWidth(one_width);
+                    value.setPrefHeight(27);
+                    value.setMaxWidth(one_width);
+                    value.setLayoutX(one_width * i);
+                    pane.getChildren().add(value);
+                    int j=1;
+                    for (DataFrame df:groupByDataFrame.getGroupDataFrameList()){
+                        switch (i) {
+                            case 0:
+                                value = new TextField(getMax(df.get(colname).getArrayList()).toString());
+                                break;
+                            case 1:
+                                value = new TextField(getMin(df.get(colname).getArrayList()).toString());
+                                break;
+                            case 2:
+                                if (getSum(df.get(colname).getArrayList()) != null)
+                                    value = new TextField(getSum(df.get(colname).getArrayList()).toString());
+                                else
+                                    value = new TextField("Unavailable");
+                                break;
+                            case 3:
+                                if (getVariance(df.get(colname).getArrayList()) != null)
+                                    value = new TextField(getVariance(df.get(colname).getArrayList()).toString());
+                                else
+                                    value = new TextField("Unavailable");
+                                break;
+                            case 4:
+                                if (getStd(df.get(colname).getArrayList()) != null)
+                                    value = new TextField(getStd(df.get(colname).getArrayList()).toString());
+                                else
+                                    value = new TextField("Unavailable");
+                                break;
+                            default:
+                                value = new TextField(" ");
+                        }
+//                    value = new TextField( ((DataFrame) hashMap.get("max")).getRecord(0)[i].toString());
+                        value.setPrefWidth(one_width);
+                        value.setMaxWidth(one_width);
+                        value.setPrefHeight(27);
+                        value.setLayoutX(one_width * i);
+                        value.setLayoutY(27*(j++));
+                        pane.getChildren().add(value);
+                    }
+
+                }
+
+
+
+
+            } catch (Exception e) {e.printStackTrace();
+                errorDisplayGroupby(e, "An error occured while grouping dataframe");
+            }}
+        spane.setContent(pane);
+    }
     @FXML
     CheckBox header;
     @FXML
@@ -156,6 +329,11 @@ Pane pane=new Pane();
         stage.close();
         t = true;
     }
+    String concatArray(String[] array){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String str: array) stringBuilder.append(str);
+        return stringBuilder.toString();
+    }
     static boolean t = false,f=false;
     public void closeWindow1(ActionEvent event){
         String source1 = event.getSource().toString();
@@ -164,8 +342,6 @@ Pane pane=new Pane();
         switch (source1){
             case "Button[id=valinteger, styleClass=button]'Integer'":
                 types[index] = ValInteger.class;
-                System.out.println(types[index]);
-                System.out.println("III");
                 break;
             case "Button[id=valdouble, styleClass=button]'Double'":
                 types[index] = ValDouble.class;
@@ -190,9 +366,15 @@ Pane pane=new Pane();
         stage.close();
 
     }
+    @FXML
+    ImageView img;
     String[] groupby;
+    double one_width;
     public void max(ActionEvent event){
         pane = new Pane();
+
+        System.out.println(one_width);
+        pane.setBackground(new Background(new BackgroundFill(Color.web("#" + "635B5B" ), CornerRadii.EMPTY, Insets.EMPTY)));
         final ListView listView = new ListView();
         groupby = groupBy.getText().split(",");
         System.out.println(groupBy.getText().length());
@@ -206,16 +388,16 @@ Pane pane=new Pane();
                 }
                 for (int i = 0; i < dataFrame.getColumns().length; ++i) {
                     TextField value = new TextField(dataFrame.getColumns()[i]);
-                    value.setPrefWidth(100);
+                    value.setPrefWidth(one_width/numberOfColumns);
                     value.setPrefHeight(27);
-                    value.setMaxWidth(100);
-                    value.setLayoutX(100*i);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
                     pane.getChildren().add(value);
                     value = new TextField( ((DataFrame) hashMap.get("max")).getRecord(0)[i].toString());
-                    value.setPrefWidth(100);
-                    value.setMaxWidth(100);
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setMaxWidth(one_width/numberOfColumns);
                     value.setPrefHeight(27);
-                    value.setLayoutX(100*i);
+                    value.setLayoutX(one_width/numberOfColumns*i);
                     value.setLayoutY(27);
                     pane.getChildren().add(value);
 
@@ -225,28 +407,30 @@ Pane pane=new Pane();
             }
         }else{
             try {
-                if (!hashMap.containsKey("groupby"+groupby.toString())) {
-                    hashMap.put("groupby"+groupby.toString(), dataFrame.groupby(groupby));
+                if (!hashMap.containsKey("groupby"+concatArray(groupby))) {
+                    hashMap.put("groupby"+concatArray(groupby), dataFrame.groupby(groupby));
                 }
                 System.out.println(1);
-                if (!hashMap.containsKey("max"+groupby.toString())) {
-                    hashMap.put("max"+groupby.toString(), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+groupby.toString())).max());
+                System.out.println(hashMap.containsKey("max"+concatArray(groupby)));
+                for(String str:hashMap.keySet()) System.out.println(str);
+                if (!hashMap.containsKey("max"+concatArray(groupby))) {
+                    hashMap.put("max"+concatArray(groupby), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).max());
                 }
                 System.out.println(2);
 
                 for (int i = 0; i < dataFrame.getColumns().length; ++i) {
                     TextField value = new TextField(dataFrame.getColumns()[i]);
-                    value.setMaxWidth(100);
-                    value.setLayoutX(100*i);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
 
                     pane.getChildren().add(value);
-                    DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+groupby.toString())).max();
+                    DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).max();
 
                     for (int j=0; j<current.size(); ++j) {
                         value = new TextField(current.getRecord(j)[i].toString());
-                        value.setMaxWidth(100);
-                        value.setLayoutX(100);
-                        value.setLayoutX(100*i);
+                        value.setMaxWidth(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns*i);
                         value.setLayoutY(27*(j+1));
                         pane.getChildren().add(value);
 
@@ -259,9 +443,186 @@ Pane pane=new Pane();
         spane.setContent(pane);
     }
 
+    public void std(ActionEvent event){
+
+        pane = new Pane();        pane.setBackground(new Background(new BackgroundFill(Color.web("#" + "635B5B" ), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        final ListView listView = new ListView();
+        groupby = groupBy.getText().split(",");
+        System.out.println(groupBy.getText().length());
+        if (groupBy.getText().length()==0){
+            try {
+                if (!hashMap.containsKey("groupby")){
+                    hashMap.put("groupby",dataFrame.groupby());
+                }
+                if (!hashMap.containsKey("std")) {
+                    hashMap.put("std",((DataFrame.GroupByDataFrame) hashMap.get("groupby")).std());
+                }
+                int groupedIndex = 0;
+                for (int i=0;i<dataFrame.getColumns().length; ++i){
+                    TextField value = new TextField(dataFrame.getColumns()[i]);
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setPrefHeight(27);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    pane.getChildren().add(value);
+                    if(!Objects.equals(dataFrame.getColumns()[i],((DataFrame)hashMap.get("std")).getColumns()[groupedIndex])){
+                        value = new TextField("Unavailable");
+                    }
+                    else{
+                        value = new TextField(((DataFrame)hashMap.get("std")).getRecord(0)[groupedIndex].toString());
+                        groupedIndex++;
+                    }
+
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setPrefHeight(27);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    value.setLayoutY(27);
+                    pane.getChildren().add(value);
+
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                errorDisplayGroupby(e, "An error occured while grouping dataframe");
+            }
+        }
+        else{
+            try {
+                if (!hashMap.containsKey("groupby"+concatArray(groupby))) {
+                    hashMap.put("groupby"+concatArray(groupby), dataFrame.groupby(groupby));
+                }
+//            System.out.println(1);
+                if (!hashMap.containsKey("std"+concatArray(groupby))) {
+
+                    hashMap.put("std"+concatArray(groupby), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).std());
+                }
+//            System.out.println(2);
+
+                for (int i = 0; i < dataFrame.getColumns().length; ++i) {
+                    TextField value = new TextField(dataFrame.getColumns()[i]);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    pane.getChildren().add(value);
+                }
+                DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).std();
+
+                for (int j=0; j<current.size(); ++j) {
+                    int groupedIndex = 0;
+                    TextField value;
+                    for(int i = 0; i < dataFrame.getColumns().length; ++i) {
+                        if (!Objects.equals(dataFrame.getColumns()[i], current.getColumns()[groupedIndex])) {
+                            value = new TextField("Unavailable");
+                        } else {
+                            value = new TextField(current.getRecord(j)[groupedIndex].toString());
+                            groupedIndex++;
+                        }
+                        value.setMaxWidth(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns* i);
+                        value.setLayoutY(27 * (j + 1));
+                        pane.getChildren().add(value);
+                    }
+                }
+
+            } catch (Exception e) {e.printStackTrace();
+                errorDisplayGroupby(e, "An error occured while grouping dataframe");
+            }}
+        spane.setContent(pane);
+    }
+
+    public void var(ActionEvent event){
+
+        pane = new Pane();         pane.setBackground(new Background(new BackgroundFill(Color.web("#" + "635B5B" ), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        final ListView listView = new ListView();
+        groupby = groupBy.getText().split(",");
+        System.out.println(groupBy.getText().length());
+        if (groupBy.getText().length()==0){
+            try {
+                if (!hashMap.containsKey("groupby")){
+                    hashMap.put("groupby",dataFrame.groupby());
+                }
+                if (!hashMap.containsKey("var")) {
+                    hashMap.put("var",((DataFrame.GroupByDataFrame) hashMap.get("groupby")).var());
+                }
+                int groupedIndex = 0;
+                for (int i=0;i<dataFrame.getColumns().length; ++i){
+                    TextField value = new TextField(dataFrame.getColumns()[i]);
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setPrefHeight(27);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    pane.getChildren().add(value);
+                    if(!Objects.equals(dataFrame.getColumns()[i],((DataFrame)hashMap.get("var")).getColumns()[groupedIndex])){
+                        value = new TextField("Unavailable");
+                    }
+                    else{
+                        value = new TextField(((DataFrame)hashMap.get("var")).getRecord(0)[groupedIndex].toString());
+                        groupedIndex++;
+                    }
+
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setPrefHeight(27);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    value.setLayoutY(27);
+                    pane.getChildren().add(value);
+
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                errorDisplayGroupby(e, "An error occured while grouping dataframe");
+            }
+        }
+        else{
+            try {
+                if (!hashMap.containsKey("groupby"+concatArray(groupby))) {
+                    hashMap.put("groupby"+concatArray(groupby), dataFrame.groupby(groupby));
+                }
+//            System.out.println(1);
+                if (!hashMap.containsKey("var"+concatArray(groupby))) {
+                    hashMap.put("var"+concatArray(groupby), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).var());
+                }
+//            System.out.println(2);
+
+                for (int i = 0; i < dataFrame.getColumns().length; ++i) {
+                    TextField value = new TextField(dataFrame.getColumns()[i]);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    pane.getChildren().add(value);
+                }
+                DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).var();
+
+                for (int j=0; j<current.size(); ++j) {
+                    int groupedIndex = 0;
+                    TextField value;
+                    for(int i = 0; i < dataFrame.getColumns().length; ++i) {
+                        if (!Objects.equals(dataFrame.getColumns()[i], current.getColumns()[groupedIndex])) {
+                            value = new TextField("Unavailable");
+                        } else {
+                            value = new TextField(current.getRecord(j)[groupedIndex].toString());
+                            groupedIndex++;
+                        }
+                        value.setMaxWidth(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns * i);
+                        value.setLayoutY(27 * (j + 1));
+                        pane.getChildren().add(value);
+                    }
+                }
+
+            } catch (Exception e) {e.printStackTrace();
+                errorDisplayGroupby(e, "An error occured while grouping dataframe");
+            }}
+        spane.setContent(pane);
+    }
     public void sum(ActionEvent event){
 
-        pane = new Pane();
+        pane = new Pane();         pane.setBackground(new Background(new BackgroundFill(Color.web("#" + "635B5B" ), CornerRadii.EMPTY, Insets.EMPTY)));
+
         final ListView listView = new ListView();
         groupby = groupBy.getText().split(",");
         System.out.println(groupBy.getText().length());
@@ -275,7 +636,12 @@ Pane pane=new Pane();
                 }
                 int groupedIndex = 0;
                 for (int i=0;i<dataFrame.getColumns().length; ++i){
-                    TextField value;
+                    TextField value = new TextField(dataFrame.getColumns()[i]);
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setPrefHeight(27);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    pane.getChildren().add(value);
                     if(!Objects.equals(dataFrame.getColumns()[i],((DataFrame)hashMap.get("sum")).getColumns()[groupedIndex])){
                         value = new TextField("Unavailable");
                     }
@@ -284,43 +650,57 @@ Pane pane=new Pane();
                         groupedIndex++;
                     }
 
-                }
-            }
-            catch (Exception e) {
-
-                e.printStackTrace();
-                errorDisplayGroupby(e, "An error occured while grouping dataframe");
-            }
-        }else{
-        try {
-            if (!hashMap.containsKey("groupby"+groupby.toString())) {
-                hashMap.put("groupby"+groupby.toString(), dataFrame.groupby(groupby));
-            }
-            System.out.println(1);
-            if (!hashMap.containsKey("min"+groupby.toString())) {
-                hashMap.put("min"+groupby.toString(), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+groupby.toString())).min());
-            }
-            System.out.println(2);
-
-            for (int i = 0; i < dataFrame.getColumns().length; ++i) {
-                TextField value = new TextField(dataFrame.getColumns()[i]);
-                value.setMaxWidth(100);
-                value.setLayoutX(100*i);
-
-                pane.getChildren().add(value);
-                DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+groupby.toString())).min();
-
-                for (int j=0; j<current.size(); ++j) {
-                    value = new TextField(current.getRecord(j)[i].toString());
-                    value.setMaxWidth(100);
-                    value.setLayoutX(100);
-                    value.setLayoutX(100*i);
-                    value.setLayoutY(27*(j+1));
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setPrefHeight(27);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    value.setLayoutY(27);
                     pane.getChildren().add(value);
 
                 }
-
             }
+            catch (Exception e) {
+                e.printStackTrace();
+                errorDisplayGroupby(e, "An error occured while grouping dataframe");
+            }
+        }
+        else{
+            try {
+                if (!hashMap.containsKey("groupby"+concatArray(groupby))) {
+                    hashMap.put("groupby"+concatArray(groupby), dataFrame.groupby(groupby));
+                }
+//            System.out.println(1);
+                if (!hashMap.containsKey("sum"+concatArray(groupby))) {
+                    hashMap.put("sum"+concatArray(groupby), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).min());
+                }
+//            System.out.println(2);
+
+                for (int i = 0; i < dataFrame.getColumns().length; ++i) {
+                    TextField value = new TextField(dataFrame.getColumns()[i]);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
+                    pane.getChildren().add(value);
+                }
+                    DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).sum();
+
+                    for (int j=0; j<current.size(); ++j) {
+                    int groupedIndex = 0;
+                    TextField value;
+                    for(int i = 0; i < dataFrame.getColumns().length; ++i) {
+                        if (!Objects.equals(dataFrame.getColumns()[i], current.getColumns()[groupedIndex])) {
+                            value = new TextField("Unavailable");
+                        } else {
+                            value = new TextField(current.getRecord(j)[groupedIndex].toString());
+                            groupedIndex++;
+                        }
+                        value.setMaxWidth(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns);
+                        value.setLayoutX(one_width/numberOfColumns * i);
+                        value.setLayoutY(27 * (j + 1));
+                        pane.getChildren().add(value);
+                    }
+                }
+
         } catch (Exception e) {e.printStackTrace();
             errorDisplayGroupby(e, "An error occured while grouping dataframe");
         }}
@@ -328,8 +708,9 @@ Pane pane=new Pane();
     }
 
         public void min(ActionEvent event){
-        pane = new Pane();
-        final ListView listView = new ListView();
+        pane = new Pane();         pane.setBackground(new Background(new BackgroundFill(Color.web("#" + "635B5B" ), CornerRadii.EMPTY, Insets.EMPTY)));
+
+            final ListView listView = new ListView();
         groupby = groupBy.getText().split(",");
         System.out.println(groupBy.getText().length());
         if (groupBy.getText().length()==0){
@@ -342,16 +723,16 @@ Pane pane=new Pane();
                 }
                 for (int i = 0; i < dataFrame.getColumns().length; ++i) {
                     TextField value = new TextField(dataFrame.getColumns()[i]);
-                    value.setPrefWidth(100);
+                    value.setPrefWidth(one_width/numberOfColumns);
                     value.setPrefHeight(27);
-                    value.setMaxWidth(100);
-                    value.setLayoutX(100*i);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
                     pane.getChildren().add(value);
                     value = new TextField( ((DataFrame) hashMap.get("min")).getRecord(0)[i].toString());
-                    value.setPrefWidth(100);
-                    value.setMaxWidth(100);
+                    value.setPrefWidth(one_width/numberOfColumns);
+                    value.setMaxWidth(one_width/numberOfColumns);
                     value.setPrefHeight(27);
-                    value.setLayoutX(100*i);
+                    value.setLayoutX(one_width/numberOfColumns*i);
                     value.setLayoutY(27);
                     pane.getChildren().add(value);
 
@@ -361,28 +742,28 @@ Pane pane=new Pane();
             }
         }else{
         try {
-            if (!hashMap.containsKey("groupby"+groupby.toString())) {
-                hashMap.put("groupby"+groupby.toString(), dataFrame.groupby(groupby));
+            if (!hashMap.containsKey("groupby"+concatArray(groupby))) {
+                hashMap.put("groupby"+concatArray(groupby), dataFrame.groupby(groupby));
             }
             System.out.println(1);
-            if (!hashMap.containsKey("min"+groupby.toString())) {
-                hashMap.put("min"+groupby.toString(), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+groupby.toString())).min());
+            if (!hashMap.containsKey("min"+concatArray(groupby))) {
+                hashMap.put("min"+concatArray(groupby), ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).min());
             }
             System.out.println(2);
 
             for (int i = 0; i < dataFrame.getColumns().length; ++i) {
                 TextField value = new TextField(dataFrame.getColumns()[i]);
-                value.setMaxWidth(100);
-                value.setLayoutX(100*i);
+                value.setMaxWidth(one_width/numberOfColumns);
+                value.setLayoutX(one_width/numberOfColumns*i);
 
                 pane.getChildren().add(value);
-                DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+groupby.toString())).min();
+                DataFrame current = ((DataFrame.GroupByDataFrame) hashMap.get("groupby"+concatArray(groupby))).min();
 
                 for (int j=0; j<current.size(); ++j) {
                     value = new TextField(current.getRecord(j)[i].toString());
-                    value.setMaxWidth(100);
-                    value.setLayoutX(100);
-                    value.setLayoutX(100*i);
+                    value.setMaxWidth(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns);
+                    value.setLayoutX(one_width/numberOfColumns*i);
                     value.setLayoutY(27*(j+1));
                     pane.getChildren().add(value);
 

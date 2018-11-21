@@ -7,18 +7,22 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #c0cbdf;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="658.0" prefWidth="923.0" style="-fx-background-color: #12101e;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <MenuBar prefHeight="29.0" prefWidth="600.0" style="-fx-background-color: #e8a84a;">
+      <MenuBar prefHeight="29.0" prefWidth="923.0" style="-fx-background-color: #2a3d5b;">
         <menus>
           <Menu fx:id="menuBar" mnemonicParsing="false" text="File opitions">
             <items>
               <MenuItem fx:id="loadFile" mnemonicParsing="false" onAction="#readFile" text="Open CSV..." />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Statistics" />
+          <Menu fx:id="stat" mnemonicParsing="false" style="-fx-text-fill: white;" text="Statistics" />
           <Menu mnemonicParsing="false" text="Plots">
             <items>
               <MenuItem mnemonicParsing="false" text="About" />
@@ -26,18 +30,33 @@
           </Menu>
         </menus>
       </MenuBar>
-      <Label fx:id="fileInfo" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutY="29.0" prefHeight="42.0" prefWidth="600.0" style="-fx-border-style: dotted; -fx-border-width: 3px;" text="No file loaded" wrapText="true" />
-      <Button fx:id="max" disable="true" layoutX="14.0" layoutY="71.0" mnemonicParsing="false" onAction="#max" prefHeight="26.0" prefWidth="99.0" text="Count MAX" />
-      <Button fx:id="min" disable="true" layoutX="14.0" layoutY="97.0" mnemonicParsing="false" onAction="#min" prefHeight="26.0" prefWidth="99.0" text="Count MIN" />
-      <Button fx:id="sum" disable="true" layoutX="14.0" layoutY="123.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="99.0" text="Count SUM" />
-      <Button fx:id="var" disable="true" layoutX="14.0" layoutY="149.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="99.0" text="Count VAR" />
-      <Button fx:id="std" disable="true" layoutX="14.0" layoutY="175.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="99.0" text="Count STD" />
-      <TextArea fx:id="groupBy" disable="true" layoutX="14.0" layoutY="252.0" prefHeight="134.0" prefWidth="99.0" />
-      <Label fx:id="info1" alignment="CENTER" disable="true" layoutX="14.0" layoutY="209.0" prefHeight="35.0" prefWidth="99.0" text="GroupBy columns" textAlignment="CENTER" wrapText="true" />
-      <ScrollPane fx:id="spane" layoutX="122.0" layoutY="71.0" prefHeight="313.0" prefWidth="436.0">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-        </content>
-      </ScrollPane>
+      <Pane layoutY="29.0" prefHeight="126.0" prefWidth="726.0">
+         <children>
+            <Label fx:id="fileInfo" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="297.0" layoutY="25.0" prefHeight="87.0" prefWidth="601.0" style="-fx-border-style: dotted; -fx-border-width: 3px; -fx-background-color: #635B5B;" text="No file loaded" wrapText="true">
+               <font>
+                  <Font name="Lato Bold" size="37.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="img" cache="true" fitHeight="178.0" fitWidth="174.0" layoutX="76.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@x.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Button fx:id="max" disable="true" layoutX="67.0" layoutY="260.0" mnemonicParsing="false" onAction="#max" prefHeight="26.0" prefWidth="173.0" text="Count MAX" />
+      <Button fx:id="min" disable="true" layoutX="68.0" layoutY="294.0" mnemonicParsing="false" onAction="#min" prefHeight="26.0" prefWidth="173.0" text="Count MIN" />
+      <Button fx:id="sum" disable="true" layoutX="67.0" layoutY="329.0" mnemonicParsing="false" onAction="#sum" prefHeight="26.0" prefWidth="173.0" text="Count SUM" />
+      <Button fx:id="var" disable="true" layoutX="67.0" layoutY="363.0" mnemonicParsing="false" onAction="#var" prefHeight="26.0" prefWidth="173.0" text="Count VAR" />
+      <Button fx:id="std" disable="true" layoutX="67.0" layoutY="397.0" mnemonicParsing="false" onAction="#std" prefHeight="26.0" prefWidth="173.0" text="Count STD" />
+      <TextArea fx:id="groupBy" disable="true" layoutX="34.0" layoutY="561.0" prefHeight="78.0" prefWidth="238.0" />
+      <Label fx:id="info1" alignment="CENTER" disable="true" layoutX="34.0" layoutY="503.0" prefHeight="46.0" prefWidth="238.0" style="-fx-background-color: #635B5B;" text="GroupBy columns" textAlignment="CENTER" textFill="#eaecee" wrapText="true">
+         <font>
+            <Font name="Lato Bold" size="15.0" />
+         </font></Label>
+      <ScrollPane fx:id="spane" layoutX="296.0" layoutY="155.0" prefHeight="484.0" prefWidth="601.0" style="-fx-background-image: #635B5B; -fx-background-color: #635B5B;">
+         <content>
+            <Pane prefHeight="483.0" prefWidth="594.0" style="-fx-background-color: #635B5B;" />
+         </content></ScrollPane>
    </children>
 </AnchorPane>
