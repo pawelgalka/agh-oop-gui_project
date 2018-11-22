@@ -25,7 +25,7 @@
           <Menu fx:id="stat" mnemonicParsing="false" style="-fx-text-fill: white;" text="Statistics" />
           <Menu mnemonicParsing="false" text="Plots">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="draw" mnemonicParsing="false" onAction="#handle" text="Draw" />
             </items>
           </Menu>
         </menus>

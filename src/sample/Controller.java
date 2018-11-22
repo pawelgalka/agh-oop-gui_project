@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -58,6 +59,8 @@ public class Controller {
 
     @FXML
     Menu stat;
+
+
 
 
     String[] options = {"Max","Min","Sum","Var","Std"};
@@ -299,7 +302,79 @@ public class Controller {
                 errorDisplayGroupby(e, "An error occured while grouping dataframe");
             }}
         spane.setContent(pane);
+        one_width = spane.getWidth();
     }
+
+
+    public void handle(ActionEvent event) {
+            Stage stage = new Stage();
+                /*if (col1.getText().isEmpty() || col2.getText().isEmpty()){
+                    errorDisplayGroupby(new InvalidParameterException(), "Cannot create chart, one col empty");
+                }*/
+//            final CategoryAxis xAxis = new CategoryAxis();
+//            final NumberAxis yAxis = new NumberAxis();
+//            xAxis.setLabel("x");
+//
+//            final LineChart<String,Number> lineChart =
+//                    new LineChart<String,Number>(xAxis,yAxis);
+//            lineChart.setTitle("Stock Monitoring, 2010");
+//
+//            XYChart.Series series = new XYChart.Series();
+//            series.setName("Line chart of ");
+//
+//            series.getData().add(new XYChart.Data("Jan", 23));
+//        series.getData().add(new XYChart.Data("Jan", 14));
+//            series.getData().add(new XYChart.Data("Mar", 15));
+//            series.getData().add(new XYChart.Data("Apr", 24));
+//            series.getData().add(new XYChart.Data("May", 34));
+//            series.getData().add(new XYChart.Data("Jun", 36));
+//            series.getData().add(new XYChart.Data("Jul", 22));
+//            series.getData().add(new XYChart.Data("Aug", 45));
+//            series.getData().add(new XYChart.Data("Sep", 43));
+//            series.getData().add(new XYChart.Data("Oct", 17));
+//            series.getData().add(new XYChart.Data("Nov", 29));
+//            series.getData().add(new XYChart.Data("Dec", 25));
+//
+//
+//            Scene scene  = new Scene(lineChart,800,600);
+//            lineChart.getData().add(series);
+//
+//            plotStage.setScene(scene);
+//            plotStage.show();
+        stage.setTitle("Scatter Chart");
+        
+        final NumberAxis xAxis = new NumberAxis(0, 10, 1);
+        final NumberAxis yAxis = new NumberAxis(-100, 500, 100);
+        final ScatterChart<Number,Number> sc = new
+                ScatterChart<Number,Number>(xAxis,yAxis);
+        xAxis.setLabel("Age (years)");
+        yAxis.setLabel("Returns to date");
+        sc.setTitle("Investment Overview");
+
+        XYChart.Series series1 = new XYChart.Series();
+        series1.setName("Equities");
+        series1.getData().add(new XYChart.Data(4.2, 193.2));
+        series1.getData().add(new XYChart.Data(2.8, 33.6));
+        series1.getData().add(new XYChart.Data(6.2, 24.8));
+        series1.getData().add(new XYChart.Data(1, 14));
+        series1.getData().add(new XYChart.Data(1.2, 26.4));
+        series1.getData().add(new XYChart.Data(4.4, 114.4));
+        series1.getData().add(new XYChart.Data(8.5, 323));
+        series1.getData().add(new XYChart.Data(6.9, 289.8));
+        series1.getData().add(new XYChart.Data(9.9, 287.1));
+        series1.getData().add(new XYChart.Data(0.9, -9));
+        series1.getData().add(new XYChart.Data(3.2, 150.8));
+        series1.getData().add(new XYChart.Data(4.8, 20.8));
+        series1.getData().add(new XYChart.Data(7.3, -42.3));
+        series1.getData().add(new XYChart.Data(1.8, 81.4));
+        series1.getData().add(new XYChart.Data(7.3, 110.3));
+        series1.getData().add(new XYChart.Data(2.7, 41.2));
+        sc.getData().addAll(series1);
+        Scene scene  = new Scene(sc, 500, 400);
+        stage.setScene(scene);
+        stage.show();
+        }
+
     @FXML
     CheckBox header;
     @FXML

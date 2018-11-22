@@ -1,0 +1,13 @@
+
+.menu-bar {
+    -fx-background-color: darkslategray;
+    -fx-opacity: 0.5;
+}
+
+.menu-bar .label{
+    -fx-text-fill: cornsilk;
+}
+
+.menu-item .label{
+    -fx-text-fill: darkslategray;
+}
