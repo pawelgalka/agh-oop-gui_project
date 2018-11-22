@@ -81,6 +81,7 @@ public class DataFrame {
             while ((strLine = br.readLine()) != null) {
                 String[] str = strLine.split(",");
                 for (int i = 0; i < str.length; i++) {
+                    System.out.println(str[i]);
                     if (types[i] == ValInteger.class){
                         values[i] = ValInteger.getInstance().create(str[i]);
                     }
@@ -369,7 +370,7 @@ public class DataFrame {
 //               System.out.println(str+colnames[i]);
                 if (Objects.equals(str,columns[i])) {indexes.add(index++,i); found = true;}
             }
-            if (!found) throw new CustomException("Invalid column name");
+            if (!found) throw new CustomException("Invalid column name "+str);
         }
 //        for(int i:indexes) System.out.println(i);;
 

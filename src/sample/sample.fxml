@@ -54,7 +54,7 @@
          <font>
             <Font name="Lato Bold" size="15.0" />
          </font></Label>
-      <ScrollPane fx:id="spane" layoutX="296.0" layoutY="155.0" prefHeight="484.0" prefWidth="601.0" style="-fx-background-image: #635B5B; -fx-background-color: #635B5B;">
+      <ScrollPane fx:id="spane" layoutX="296.0" layoutY="155.0" prefHeight="484.0" prefWidth="601.0" style="-fx-background-color: #635B5B;">
          <content>
             <Pane prefHeight="483.0" prefWidth="594.0" style="-fx-background-color: #635B5B;" />
          </content></ScrollPane>

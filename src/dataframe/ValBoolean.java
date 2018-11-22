@@ -91,7 +91,9 @@ public class ValBoolean extends Value {
 
     @Override
     public Value create(String s) {
-        value = Boolean.parseBoolean(s);
+        if (s!=null && (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false")))
+            value = Boolean.parseBoolean(s);
+        else throw new IllegalArgumentException("Invalid boolean type: "+s);
         return new ValBoolean(value);
     }
     @Override
