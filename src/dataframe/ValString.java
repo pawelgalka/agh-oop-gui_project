@@ -9,6 +9,7 @@ public class ValString extends Value {
     public static ValString getInstance(){
         return integer;
     }
+
     ValString(){};
 
     public ValString(final String integer){

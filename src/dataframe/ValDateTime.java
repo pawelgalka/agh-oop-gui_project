@@ -1,6 +1,5 @@
 package dataframe;
 
-import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -83,6 +82,16 @@ public class ValDateTime extends Value {
     }
 
 
+    /*@Override
+    public boolean equals(Object other) {
+        return this.eq((Value)other);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }*/
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,12 +109,9 @@ public class ValDateTime extends Value {
     @Override
     public Value create(String s) {
         try {
-            System.out.println(s);
             value = dateFormat.parse(s);
         }
-        catch (ParseException e){
-            throw new InvalidParameterException("Invalid date format "+s);
-        }
+        catch (ParseException e){}
         return new ValDateTime(value);
     }
     @Override

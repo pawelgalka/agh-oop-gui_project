@@ -1,6 +1,7 @@
 package sample;
 
 import dataframe.*;
+import javafx.collections.FXCollections;
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -27,7 +29,7 @@ public class Controller {
 
     private DataFrame dataFrame;
     private static File file;
-    private static int index=0;
+    private static int index=0,i=0;
     private static String[] names;
     private static Class<? extends Value>[] types;
     private HashMap<String, Object> hashMap = new HashMap<>();
@@ -37,9 +39,11 @@ public class Controller {
     private double one_width;
     private static boolean t = false,f=false;
     private String[] options = {"Max","Min","Sum","Var","Std"};
+    private static String x,y;
+
 
     @FXML
-    AnchorPane mainPane;
+    AnchorPane mainPane,plotChooser;
 
     @FXML
     ScrollPane spane;
@@ -51,7 +55,7 @@ public class Controller {
     Button nextButton,valinteger,valdouble,valfloat,valboolean,valstring,valdate;
 
     @FXML
-    Button max,min,sum,std,var;
+    Button max,min,sum,std,var,btn;
 
     @FXML
     Menu stat;
@@ -63,7 +67,7 @@ public class Controller {
     CheckBox header;
 
     @FXML
-    TextArea columnsNames,groupBy;
+    TextArea columnsNames,groupBy,colChooser;
 
     static int numberOfColumns;
 
@@ -227,24 +231,87 @@ public class Controller {
     }
 
 
+    @FXML
+    private ComboBox<String> xColumn;
+    @FXML
+    private ComboBox<String> yColumn;
+
+    public void setDataFrame(DataFrame dataFrame, Controller controller) {
+        this.dataFrame = dataFrame;
+        controller.xColumn.setItems(FXCollections.observableArrayList(dataFrame.getColumns()));
+        controller.yColumn.setItems(FXCollections.observableArrayList(dataFrame.getColumns()));
+    }
+private ArrayList<Integer> plotCols = new ArrayList<>();
     public void handle(ActionEvent event) {
         pane = new Pane();
-        final NumberAxis xAxis = new NumberAxis(0, 10, 1);
-        final NumberAxis yAxis = new NumberAxis(-100, 500, 100);
-        final ScatterChart<Number,Number> sc = new
-                ScatterChart<Number,Number>(xAxis,yAxis);
-        xAxis.setLabel("Age (years)");
-        yAxis.setLabel("Returns to date");
-        sc.setTitle("Investment Overview");
 
-        XYChart.Series series1 = new XYChart.Series();
-        series1.setName("Equities");
-        series1.getData().add(new XYChart.Data(4.2, 193.2));
-        series1.getData().add(new XYChart.Data(2.8, 33.6));
-        series1.getData().add(new XYChart.Data(6.2, 24.8));
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ColumnsPlotChooser.fxml"));
+            Parent root = fxmlLoader.load();
+            Controller controller = fxmlLoader.<Controller>getController();
+            setDataFrame(dataFrame,controller);
+            type.setScene(new Scene(root));
+            type.showAndWait();
+            plotCols = dataFrame.GetIndexesOfColumns(x,y);
+        } catch (Exception e){
+            e.printStackTrace();
+            errorDisplayGroupby(e,"XD");
+            return;
+        }
+        String col1 = this.dataFrame.getColumns()[plotCols.get(0)], col2 = this.dataFrame.getColumns()[plotCols.get(1)];
+        Column firstColumn = dataFrame.get(col1), secondColumn = dataFrame.get(col2);
+        Class first_el = firstColumn.getArrayList().get(0).getClass(), second_el = secondColumn.getArrayList().get(1).getClass();
+
+        XYChart.Series series1;
+
+        final Axis xAxis,yAxis;
+        final ScatterChart sc;
+        if (first_el.isAssignableFrom(ValInteger.class) || first_el.isAssignableFrom(ValDouble.class) || first_el.isAssignableFrom(ValFloat.class)  ){
+            if (second_el.isAssignableFrom(ValInteger.class) || second_el.isAssignableFrom(ValDouble.class) || second_el.isAssignableFrom(ValFloat.class)){
+                xAxis = new NumberAxis();
+                yAxis = new NumberAxis();
+                sc = new ScatterChart<Number, Number>(xAxis,yAxis);
+                series1 = new XYChart.Series<Number,Number>();
+
+                System.out.println(1);
+            }
+            else {
+                xAxis = new NumberAxis();
+                yAxis = new CategoryAxis();
+                sc = new ScatterChart<Number, String>(xAxis,yAxis);
+                series1 = new XYChart.Series<Number, String>();
+                System.out.println(2);
+
+            }
+        }
+        else {
+            if (second_el.isAssignableFrom(ValInteger.class) || second_el.isAssignableFrom(ValDouble.class) || second_el.isAssignableFrom(ValFloat.class)){
+                xAxis = new CategoryAxis();
+                yAxis = new NumberAxis();
+                sc = new ScatterChart<String, Number>(xAxis,yAxis);
+                series1 = new XYChart.Series<String,Number>();
+                System.out.println(1);
+            }
+            else {
+                xAxis = new CategoryAxis();
+                yAxis = new CategoryAxis();
+                sc = new
+                        ScatterChart<String, String>(xAxis,yAxis);
+                series1 = new XYChart.Series<String, String>();
+                System.out.println(2);
+
+            }
+        }
+        for (int i = 0; i < firstColumn.getArrayList().size(); i++) {
+            series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).getValue(), secondColumn.getArrayList().get(i).getValue()));
+        }
+
+        xAxis.setLabel(col1);
+        yAxis.setLabel(col2);
         sc.getData().addAll(series1);
         pane.getChildren().add(sc);
         spane.setContent(pane);
+
     }
 
 
@@ -312,6 +379,17 @@ public class Controller {
 
         }
         stage.close();
+    }
+
+    public void closeWindow2(ActionEvent event){
+        String source1 = event.getSource().toString();
+        System.out.println(source1);
+        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+        if(xColumn.getSelectionModel().getSelectedItem() != null && yColumn.getSelectionModel().getSelectedItem() != null){
+            x = xColumn.getSelectionModel().getSelectedItem();
+            y = yColumn.getSelectionModel().getSelectedItem();
+            stage.close();
+        }
 
     }
 
@@ -414,7 +492,6 @@ public class Controller {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("CSV", "*.csv")
         );
-
     }
 }
 

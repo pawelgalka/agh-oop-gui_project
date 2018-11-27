@@ -22,7 +22,7 @@ public class ValDouble extends Value {
 
     @Override
     public String toString() {
-        return Double.toString(value);
+        return java.lang.Double.toString(value);
     }
 
 
@@ -51,7 +51,7 @@ public class ValDouble extends Value {
         else if (value instanceof ValFloat){
             return new ValDouble(this.value-((ValFloat) value).getValue());
         }
-        else throw new CustomException("Tried invalid operation -"+value.getClass());
+        else throw new CustomException("Tried invalid operation -");
 
     }
 
@@ -149,7 +149,7 @@ public class ValDouble extends Value {
 
     @Override
     public Value create(String s) {
-        value = Double.parseDouble(s);
+        value = java.lang.Double.parseDouble(s);
         return new ValDouble(value);
     }
     @Override

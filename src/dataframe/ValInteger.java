@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class ValInteger extends Value {
     private Integer value;
+
     private static ValInteger integer = new ValInteger();
 
     public static ValInteger getInstance(){
@@ -22,7 +23,7 @@ public class ValInteger extends Value {
 
     @Override
     public String toString() {
-        return Integer.toString(value);
+        return java.lang.Integer.toString(value);
     }
 
 
@@ -87,13 +88,13 @@ public class ValInteger extends Value {
     @Override
     public Value pow(Value value) throws CustomException {
         if (value instanceof ValInteger){
-            return new ValInteger((int)Math.pow((double)this.value,(double)((ValInteger) value).getValue()));
+            return new ValInteger((int) Math.pow((double)this.value,(double)((ValInteger) value).getValue()));
         }
         else if (value instanceof ValDouble){
-            return new ValInteger((int)Math.pow((double)this.value,(double)((ValDouble) value).getValue()));
+            return new ValInteger((int) Math.pow((double)this.value,(double)((ValDouble) value).getValue()));
         }
         else if (value instanceof ValFloat){
-            return new ValInteger((int)Math.pow((double)this.value,(double)((ValFloat) value).getValue()));
+            return new ValInteger((int) Math.pow((double)this.value,(double)((ValFloat) value).getValue()));
         }
         else throw new CustomException("Tried invalid operation ^");
     }
@@ -145,7 +146,7 @@ public class ValInteger extends Value {
 
     @Override
     public Value create(String s) {
-        value = Integer.parseInt(s);
+        value = java.lang.Integer.parseInt(s);
         return new ValInteger(value);
     }
 

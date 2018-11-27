@@ -360,7 +360,7 @@ public class DataFrame {
             e.printStackTrace();
         }
     }
-    private ArrayList<Integer> GetIndexesOfColumns(String... colnames) throws CustomException {
+    public ArrayList<Integer> GetIndexesOfColumns(String... colnames) throws CustomException {
        // for (var v:columns) System.out.println(v);
         ArrayList<Integer> indexes = new ArrayList<>();
         int index=0;

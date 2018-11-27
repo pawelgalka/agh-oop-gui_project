@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class ValBoolean extends Value {
     private Boolean value;
-    private static ValBoolean integer = new ValBoolean();
+   private static ValBoolean integer = new ValBoolean();
 
     public static ValBoolean getInstance(){
         return integer;
@@ -22,7 +22,7 @@ public class ValBoolean extends Value {
 
     @Override
     public String toString() {
-        return Boolean.toString(value);
+        return java.lang.Boolean.toString(value);
     }
 
     public Value add(Value v){
@@ -91,9 +91,7 @@ public class ValBoolean extends Value {
 
     @Override
     public Value create(String s) {
-        if (s!=null && (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false")))
-            value = Boolean.parseBoolean(s);
-        else throw new IllegalArgumentException("Invalid boolean type: "+s);
+        value = java.lang.Boolean.parseBoolean(s);
         return new ValBoolean(value);
     }
     @Override
