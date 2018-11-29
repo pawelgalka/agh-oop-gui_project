@@ -165,11 +165,10 @@ public class Controller {
     }
 
     private void stats(String colname){
+        spane.setContent(null);
         pane = new Pane();
-        System.out.println(one_width);
         pane.setBackground(new Background(new BackgroundFill(Color.web("#" + "635B5B" ), CornerRadii.EMPTY, Insets.EMPTY)));
         groupby = groupBy.getText().split(",");
-        System.out.println(groupBy.getText().length());
         one_width = spane.getWidth();
         try {
             if (!hashMap.containsKey("groupby"+concatArray(groupby))) {
@@ -244,7 +243,7 @@ public class Controller {
 private ArrayList<Integer> plotCols = new ArrayList<>();
     public void handle(ActionEvent event) {
         pane = new Pane();
-
+        plotCols = null;
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ColumnsPlotChooser.fxml"));
             Parent root = fxmlLoader.load();
@@ -290,7 +289,7 @@ private ArrayList<Integer> plotCols = new ArrayList<>();
                 yAxis = new NumberAxis();
                 sc = new ScatterChart<String, Number>(xAxis,yAxis);
                 series1 = new XYChart.Series<String,Number>();
-                System.out.println(1);
+                System.out.println(3);
             }
             else {
                 xAxis = new CategoryAxis();
@@ -298,13 +297,20 @@ private ArrayList<Integer> plotCols = new ArrayList<>();
                 sc = new
                         ScatterChart<String, String>(xAxis,yAxis);
                 series1 = new XYChart.Series<String, String>();
-                System.out.println(2);
+                System.out.println(4);
 
             }
         }
         for (int i = 0; i < firstColumn.getArrayList().size(); i++) {
-            series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).getValue(), secondColumn.getArrayList().get(i).getValue()));
+            if (first_el.isAssignableFrom(ValDateTime.class) && second_el.isAssignableFrom(ValDateTime.class))
+                series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).toString(), secondColumn.getArrayList().get(i).toString()));
+            else if (first_el.isAssignableFrom(ValDateTime.class)) series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).toString(), secondColumn.getArrayList().get(i).getValue()));
+            else if (second_el.isAssignableFrom(ValDateTime.class)) series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).getValue(), secondColumn.getArrayList().get(i).toString()));
+            else series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).getValue(), secondColumn.getArrayList().get(i).getValue()));
+
+
         }
+
 
         xAxis.setLabel(col1);
         yAxis.setLabel(col2);
