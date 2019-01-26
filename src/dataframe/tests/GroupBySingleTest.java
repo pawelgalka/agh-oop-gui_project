@@ -1,13 +1,13 @@
 package dataframe.tests;
 
 import dataframe.DataFrame;
-import dataframe.ValDateTime;
-import dataframe.ValDouble;
-import dataframe.ValString;
+import dataframe.DateTimeHolder;
+import dataframe.DoubleHolder;
+import dataframe.StringHolder;
 
 public class GroupBySingleTest {
     public static void main(String[] args) throws Exception {
-        DataFrame dataFrame = new DataFrame("/home/pawelgalka/IdeaProjects/java/src/dataframe/dane.csv",new Class[]{ValString.class, ValDateTime.class, ValDouble.class, ValDouble.class});
+        DataFrame dataFrame = new DataFrame("/home/pawelgalka/IdeaProjects/java/src/dataframe/dane.csv",new Class[]{StringHolder.class, DateTimeHolder.class, DoubleHolder.class, DoubleHolder.class});
         /*HashMap<List<Value>,DataFrame> map = dataFrame.groupby("id");
         for (var obj:map.values()){
             obj.print();

@@ -13,7 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -80,6 +79,9 @@ public class Controller {
 
     public void readFile(ActionEvent event){
         t=false;
+        spane.setContent(null);
+        stat.getItems().removeAll();
+        stat.getItems().clear();
         file = chooseFile();
         System.out.println(file.getPath());
         System.out.println(1);
@@ -105,6 +107,7 @@ public class Controller {
         if(t && types[numberOfColumns-1]!=null){
             try{
                 dataFrame = new DataFrame(file.getPath(),types,names);
+                System.out.println(dataFrame);
                 hashMap.put("dataframe",dataFrame);
             }
             catch (Exception e){
@@ -141,27 +144,27 @@ public class Controller {
     }
 
     private Value getSum(ArrayList<Value> listOfIntegers) throws Exception {
-        if (listOfIntegers.get(0).getClass() == ValBoolean.class || listOfIntegers.get(0).getClass() == ValString.class || listOfIntegers.get(0).getClass() == ValDateTime.class) return null;
-        return getMean(listOfIntegers).mul(new ValInteger(listOfIntegers.size()));
+        if (listOfIntegers.get(0).getClass() == ValBoolean.class || listOfIntegers.get(0).getClass() == StringHolder.class || listOfIntegers.get(0).getClass() == DateTimeHolder.class) return null;
+        return getMean(listOfIntegers).mul(new IntHolder(listOfIntegers.size()));
     }
 
     private Value getMean(ArrayList<Value> listOfIntegers) throws Exception {
         Value sum = listOfIntegers.get(0);
         for(int i=1; i<listOfIntegers.size(); ++i) sum = sum.add(listOfIntegers.get(i));
-        return sum.div(new ValInteger(listOfIntegers.size()));
+        return sum.div(new IntHolder(listOfIntegers.size()));
     }
 
     private Value getVariance(ArrayList<Value> listOfIntegers) throws Exception {
-        if (listOfIntegers.get(0).getClass()==ValBoolean.class || listOfIntegers.get(0).getClass()==ValString.class || listOfIntegers.get(0).getClass()==ValDateTime.class) return null;
+        if (listOfIntegers.get(0).getClass()==ValBoolean.class || listOfIntegers.get(0).getClass()== StringHolder.class || listOfIntegers.get(0).getClass()== DateTimeHolder.class) return null;
         Value mean = getMean(listOfIntegers);
-        Value square = listOfIntegers.get(0).sub(mean).pow(new ValInteger(2));
-        for(int i=1; i<listOfIntegers.size(); ++i) square = square.add(listOfIntegers.get(i).sub(mean).pow(new ValInteger(2)));
-        return square.div(new ValInteger(listOfIntegers.size()));
+        Value square = listOfIntegers.get(0).sub(mean).pow(new IntHolder(2));
+        for(int i=1; i<listOfIntegers.size(); ++i) square = square.add(listOfIntegers.get(i).sub(mean).pow(new IntHolder(2)));
+        return square.div(new IntHolder(listOfIntegers.size()));
     }
 
     private Value getStd(ArrayList<Value> list) throws Exception{
-        if (list.get(0).getClass()==ValBoolean.class || list.get(0).getClass()==ValString.class || list.get(0).getClass()==ValDateTime.class) return null;
-        return getVariance(list).pow(new ValDouble(0.5));
+        if (list.get(0).getClass()==ValBoolean.class || list.get(0).getClass()== StringHolder.class || list.get(0).getClass()== DateTimeHolder.class) return null;
+        return getVariance(list).pow(new DoubleHolder(0.5));
     }
 
     private void stats(String colname){
@@ -265,8 +268,8 @@ private ArrayList<Integer> plotCols = new ArrayList<>();
 
         final Axis xAxis,yAxis;
         final ScatterChart sc;
-        if (first_el.isAssignableFrom(ValInteger.class) || first_el.isAssignableFrom(ValDouble.class) || first_el.isAssignableFrom(ValFloat.class)  ){
-            if (second_el.isAssignableFrom(ValInteger.class) || second_el.isAssignableFrom(ValDouble.class) || second_el.isAssignableFrom(ValFloat.class)){
+        if (first_el.isAssignableFrom(IntHolder.class) || first_el.isAssignableFrom(DoubleHolder.class) || first_el.isAssignableFrom(FloatHolder.class)  ){
+            if (second_el.isAssignableFrom(IntHolder.class) || second_el.isAssignableFrom(DoubleHolder.class) || second_el.isAssignableFrom(FloatHolder.class)){
                 xAxis = new NumberAxis();
                 yAxis = new NumberAxis();
                 sc = new ScatterChart<Number, Number>(xAxis,yAxis);
@@ -284,7 +287,7 @@ private ArrayList<Integer> plotCols = new ArrayList<>();
             }
         }
         else {
-            if (second_el.isAssignableFrom(ValInteger.class) || second_el.isAssignableFrom(ValDouble.class) || second_el.isAssignableFrom(ValFloat.class)){
+            if (second_el.isAssignableFrom(IntHolder.class) || second_el.isAssignableFrom(DoubleHolder.class) || second_el.isAssignableFrom(FloatHolder.class)){
                 xAxis = new CategoryAxis();
                 yAxis = new NumberAxis();
                 sc = new ScatterChart<String, Number>(xAxis,yAxis);
@@ -302,10 +305,10 @@ private ArrayList<Integer> plotCols = new ArrayList<>();
             }
         }
         for (int i = 0; i < firstColumn.getArrayList().size(); i++) {
-            if (first_el.isAssignableFrom(ValDateTime.class) && second_el.isAssignableFrom(ValDateTime.class))
+            if (first_el.isAssignableFrom(DateTimeHolder.class) && second_el.isAssignableFrom(DateTimeHolder.class))
                 series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).toString(), secondColumn.getArrayList().get(i).toString()));
-            else if (first_el.isAssignableFrom(ValDateTime.class)) series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).toString(), secondColumn.getArrayList().get(i).getValue()));
-            else if (second_el.isAssignableFrom(ValDateTime.class)) series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).getValue(), secondColumn.getArrayList().get(i).toString()));
+            else if (first_el.isAssignableFrom(DateTimeHolder.class)) series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).toString(), secondColumn.getArrayList().get(i).getValue()));
+            else if (second_el.isAssignableFrom(DateTimeHolder.class)) series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).getValue(), secondColumn.getArrayList().get(i).toString()));
             else series1.getData().add(new XYChart.Data<>(firstColumn.getArrayList().get(i).getValue(), secondColumn.getArrayList().get(i).getValue()));
 
 
@@ -362,22 +365,22 @@ private ArrayList<Integer> plotCols = new ArrayList<>();
         Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
         switch (source1){
             case "Button[id=valinteger, styleClass=button]'Integer'":
-                types[index] = ValInteger.class;
+                types[index] = IntHolder.class;
                 break;
             case "Button[id=valdouble, styleClass=button]'Double'":
-                types[index] = ValDouble.class;
+                types[index] = DoubleHolder.class;
                 break;
             case "Button[id=valfloat, styleClass=button]'Float'":
-                types[index] = ValFloat.class;
+                types[index] = FloatHolder.class;
                 break;
             case "Button[id=valboolean, styleClass=button]'Boolean'":
                 types[index] = ValBoolean.class;
                 break;
             case "Button[id=valstring, styleClass=button]'String'":
-                types[index] = ValString.class;
+                types[index] = StringHolder.class;
                 break;
             case "Button[id=valdate, styleClass=button]'DateTime'":
-                types[index] = ValDateTime.class;
+                types[index] = DateTimeHolder.class;
                 break;
 
                 default:
@@ -426,7 +429,10 @@ private ArrayList<Integer> plotCols = new ArrayList<>();
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error Dialog");
         alert.setHeaderText(s);
-        alert.setContentText(e.getMessage());
+        Label label = new Label(e.toString());
+        label.setWrapText(true);
+        alert.getDialogPane().setContent(label);
+        //alert.setContentText(e.toString()+" "+e.getMessage());
         alert.showAndWait();
     }
 

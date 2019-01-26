@@ -15,7 +15,7 @@ public abstract class Value implements Cloneable,Comparable<Value>{
     public abstract boolean neq(Value value);
     public abstract boolean equals(Object other);
     public abstract int hashCode();
-    public abstract Value create(String s);
+    public abstract Value create(String s) throws Exception;
     public abstract Object getValue();
 
 

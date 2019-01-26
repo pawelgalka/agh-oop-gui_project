@@ -106,7 +106,7 @@ public class Main1 extends Application {
             try {
 
                 File f = fileChooser.showOpenDialog(window);
-                DataFrame check = new DataFrame(f.getPath(), new Class[]{ValString.class, ValDateTime.class, ValDouble.class});
+                DataFrame check = new DataFrame(f.getPath(), new Class[]{StringHolder.class, DateTimeHolder.class, DoubleHolder.class});
 
                 res.set(check);
 

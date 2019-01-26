@@ -63,23 +63,23 @@ public class SparseDataFrame extends DataFrame {
             String[] str = strLine.split(",");
 
             for (int i = 0; i < str.length; i++) {
-               /*if (types[i] == ValInteger.class){
-                    values[i] = ValInteger.getInstance().create(str[i]);
+               /*if (types[i] == IntHolder.class){
+                    values[i] = IntHolder.getInstance().create(str[i]);
                 }
-                if (types[i] == ValDouble.class){
-                    values[i] = ValDouble.getInstance().create(str[i]);
+                if (types[i] == DoubleHolder.class){
+                    values[i] = DoubleHolder.getInstance().create(str[i]);
                 }
                 if (types[i] == ValBoolean.class){
                     values[i] = ValBoolean.getInstance().create(str[i]);
                 }
-                if (types[i] == ValFloat.class){
-                    values[i] = ValFloat.getInstance().create(str[i]);
+                if (types[i] == FloatHolder.class){
+                    values[i] = FloatHolder.getInstance().create(str[i]);
                 }
-                if (types[i] == ValString.class){
-                    values[i] = ValString.getInstance().create(str[i]);
+                if (types[i] == StringHolder.class){
+                    values[i] = StringHolder.getInstance().create(str[i]);
                 }
-                if (types[i] == ValDateTime.class){
-                    values[i] = ValDateTime.getInstance().create(str[i]);
+                if (types[i] == DateTimeHolder.class){
+                    values[i] = DateTimeHolder.getInstance().create(str[i]);
                 }*/
                 values[i] = builders[i].build(str[i]);
 

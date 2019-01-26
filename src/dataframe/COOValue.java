@@ -19,19 +19,19 @@ public class COOValue extends Value {
 
     public void add(Object v){
         if(v instanceof Integer){
-            value =new ValInteger((Integer) v);
+            value =new IntHolder((Integer) v);
         }
         if(v instanceof Boolean){
             value =new ValBoolean((Boolean) v);
         }
         if(v instanceof Double){
-            value =new ValDouble((Double) v);
+            value =new DoubleHolder((Double) v);
         }
         if(v instanceof Float){
-            value =new ValFloat((Float) v);
+            value =new FloatHolder((Float) v);
         }
         if(v instanceof String){
-            value =new ValString((String) v);
+            value =new StringHolder((String) v);
         }
     }
 
@@ -96,7 +96,7 @@ public class COOValue extends Value {
     }
 
     @Override
-    public Value create(String s) {
+    public Value create(String s) throws Exception {
         return new COOValue(this.value.create(s),getIndex());
     }
 
